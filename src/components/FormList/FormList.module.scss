@@ -1,0 +1,22 @@
+.formList {
+  width: 350px;
+  box-sizing: border-box;
+  * {
+    box-sizing: border-box;
+  }
+  .formItem {
+    display: flex;
+  }
+  .formLabel {
+    display: inline-block;
+    width: 100px;
+    padding: 0 4px;
+  }
+  .formInput {
+    display: inline-block;
+    width: calc(100% - 100px);
+  }
+  .formListNext {
+    padding-left: 20px;
+  }
+}

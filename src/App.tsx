@@ -1,0 +1,33 @@
+import { useCallback, useEffect, useState } from "react";
+import axios from "axios";
+import {
+  FormList,
+  type FormItemConfig,
+  type FormItemValue,
+} from "./components/FormList/FormList";
+
+function App() {
+  const [value, setValue] = useState({});
+  const [formConfig, setFormConfig] = useState<Array<FormItemConfig>>([]);
+  useEffect(() => {
+    axios.get("/form/title.json").then(({ data }) => {
+      setFormConfig(data as FormItemConfig[]);
+    });
+  }, []);
+  const onChangeValue = (v: FormItemValue) => {
+    setValue(v);
+    console.log(v);
+  };
+  return (
+    <>
+      <FormList
+        title="title"
+        config={formConfig}
+        value={value}
+        onChange={onChangeValue}
+      ></FormList>
+    </>
+  );
+}
+
+export default App;
