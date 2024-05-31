@@ -1,16 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
-import axios from "axios";
-import {
-  FormList,
-  type FormItemConfig,
-  type FormItemValue,
-} from "./components/FormList/FormList";
+import { useCallback, useEffect, useState } from 'react';
+import axios from 'axios';
+import { FormList, type FormItemConfig, type FormItemValue } from './components/FormList/FormList';
+import { ChartList } from './components/ChartList/ChartList';
 
 function App() {
   const [value, setValue] = useState({});
   const [formConfig, setFormConfig] = useState<Array<FormItemConfig>>([]);
   useEffect(() => {
-    axios.get("/form/title.json").then(({ data }) => {
+    axios.get('/form/title.json').then(({ data }) => {
       setFormConfig(data as FormItemConfig[]);
     });
   }, []);
@@ -20,12 +17,11 @@ function App() {
   };
   return (
     <>
-      <FormList
-        title="title"
-        config={formConfig}
-        value={value}
-        onChange={onChangeValue}
-      ></FormList>
+      <ChartList></ChartList>
+      <div className="chartContent"></div>
+      <div className="rightPanel">
+        <FormList title="title" config={formConfig} value={value} onChange={onChangeValue}></FormList>
+      </div>
     </>
   );
 }

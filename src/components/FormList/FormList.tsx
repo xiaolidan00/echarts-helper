@@ -1,14 +1,14 @@
-import { InputNumber, Input, ColorPicker, Select, Switch } from "antd";
-import { CaretRightOutlined, CaretDownOutlined } from "@ant-design/icons";
-import styles from "./FormList.module.scss";
-import { useMemo, useState } from "react";
-import { getFlatObj, setFlatObj } from ".";
+import { InputNumber, Input, ColorPicker, Select, Switch } from 'antd';
+import { CaretRightOutlined, CaretDownOutlined } from '@ant-design/icons';
+import styles from './FormList.module.scss';
+import { useMemo, useState } from 'react';
+import { getFlatObj, setFlatObj } from '../../utils/flatObj';
 const compMap = {
   number: InputNumber,
   text: Input,
   color: ColorPicker,
   select: Select,
-  boolean: Switch,
+  boolean: Switch
 };
 export interface FormItemConfig {
   inputType: keyof typeof compMap;
@@ -33,21 +33,21 @@ export const FormItem = (
   const InputEl = compMap[props.inputType] || Input;
   const formName = useMemo(() => {
     const c = props.code;
-    return c.substring(c.lastIndexOf(".") + 1);
+    return c.substring(c.lastIndexOf('.') + 1);
   }, [props.code]);
   const changeValue = (ev: any) => {
-    if (props.inputType === "color") {
+    if (props.inputType === 'color') {
       props.onChange(props.code, ev.toRgbString());
     } else {
       props.onChange(props.code, ev);
     }
   };
   return (
-    <div className={styles.formList}>
+    <div className={styles.formItem}>
       <span className={styles.formLabel}>{formName}</span>
       <span className={styles.formInput}>
         <InputEl
-          style={{ width: "100%" }}
+          style={{ width: '100%' }}
           defaultValue={props.value || props.default}
           min={props.min}
           max={props.max}
@@ -55,8 +55,9 @@ export const FormItem = (
           onChange={changeValue}
           options={(props.options || []).map((it) => ({
             label: it,
-            value: it,
+            value: it
           }))}
+          size="small"
         />
       </span>
     </div>
@@ -83,32 +84,20 @@ export const FormList = (props: {
   for (let i = 0; i < props.config.length; i++) {
     const item = props.config[i];
     const c = props.isNextCode && item.nextCode ? item.nextCode : item.code;
-    if (c.indexOf(".") > 1) {
-      const k = c.substring(0, c.indexOf("."));
+    if (c.indexOf('.') > 1) {
+      const k = c.substring(0, c.indexOf('.'));
       listMap[k] = (listMap[k] || []).concat({
         ...item,
-        nextCode: c.substring(c.indexOf(".") + 1),
+        nextCode: c.substring(c.indexOf('.') + 1)
       });
     } else {
-      list.push(
-        <FormItem
-          {...item}
-          value={getFlatObj(props.value, c)}
-          onChange={onChangeItem}
-        />
-      );
+      list.push(<FormItem {...item} value={getFlatObj(props.value, c)} onChange={onChangeItem} />);
     }
   }
   if (Object.keys(listMap).length) {
     for (let k in listMap) {
       list.push(
-        <FormList
-          isNextCode={true}
-          title={k}
-          value={props.value}
-          config={listMap[k]}
-          onChange={props.onChange}
-        />
+        <FormList isNextCode={true} title={k} value={props.value} config={listMap[k]} onChange={props.onChange} />
       );
     }
   }
@@ -116,17 +105,16 @@ export const FormList = (props: {
   return (
     <div className={styles.formList}>
       {props.title ? (
-        <div onClick={changeShow}>
-          {isShow ? <CaretDownOutlined /> : <CaretRightOutlined />}{" "}
-          {props.title}
+        <div onClick={changeShow} className={styles.formTitle}>
+          {isShow ? <CaretDownOutlined /> : <CaretRightOutlined />} {props.title}
         </div>
       ) : (
-        ""
+        ''
       )}
       <div
+        className={props.isNextCode ? styles.formChild : ''}
         style={{
-          display: isShow ? "" : "none",
-          paddingLeft: props.isNextCode ? "20px" : "",
+          display: isShow ? '' : 'none'
         }}
       >
         {list}
