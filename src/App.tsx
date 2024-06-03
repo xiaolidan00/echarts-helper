@@ -15,12 +15,20 @@ function App() {
     setValue(v);
     console.log(v);
   };
+
   return (
     <>
       <ChartList></ChartList>
       <div className="chartContent"></div>
       <div className="rightPanel">
-        <FormList title="title" config={formConfig} value={value} onChange={onChangeValue}></FormList>
+        <FormList
+          title="title"
+          parent="title"
+          parentCode="title"
+          config={formConfig}
+          value={value}
+          onChange={onChangeValue}
+        ></FormList>
       </div>
     </>
   );

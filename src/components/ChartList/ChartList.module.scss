@@ -1,9 +1,48 @@
 .chartList {
   height: 100%;
   width: 200px;
+  overflow: auto;
   display: inline-block;
+  border-right: var(--form-border);
+  .optionItem {
+    height: 20px;
+    border: solid 1px;
+    width: 100%;
+    overflow: hidden;
+    text-align: center;
+    display: inline-block;
+    border: var(--form-border);
+    border-radius: 10px;
+    cursor: pointer;
+    &:hover {
+      color: dodgerblue;
+    }
+    &.active {
+      color: dodgerblue;
+      border: solid 1px dodgerblue;
+    }
+  }
+  .deleteIcon {
+    float: right;
+    height: 20px;
+    margin-right: 10px;
+  }
   .chartOptions {
+    height: 40%;
+    overflow: auto;
   }
   .chartSelect {
+    height: 60%;
+    .title {
+      font-weight: bold;
+      line-height: 30px;
+      height: 32px;
+      border-bottom: var(--form-border);
+      border-top: var(--form-border);
+    }
+    .dragBox {
+      height: calc(50% - 32px);
+      overflow: auto;
+    }
   }
 }

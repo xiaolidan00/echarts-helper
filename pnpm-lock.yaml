@@ -14,18 +14,22 @@ specifiers:
   eslint: ^8.57.0
   eslint-plugin-react-hooks: ^4.6.0
   eslint-plugin-react-refresh: ^0.4.6
+  immer: ^10.1.1
   react: ^18.2.0
   react-dom: ^18.2.0
   sass: ^1.77.2
   typescript: ^5.2.2
+  use-immer: ^0.9.0
   vite: ^5.2.0
 
 dependencies:
   '@ant-design/icons': 5.3.7_react-dom@18.3.1+react@18.3.1
   antd: 5.17.4_react-dom@18.3.1+react@18.3.1
   axios: 1.7.2
+  immer: 10.1.1
   react: 18.3.1
   react-dom: 18.3.1_react@18.3.1
+  use-immer: 0.9.0_immer@10.1.1+react@18.3.1
 
 devDependencies:
   '@types/antd': 1.0.0_react-dom@18.3.1+react@18.3.1
@@ -1687,6 +1691,10 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
+  /immer/10.1.1:
+    resolution: {integrity: sha512-s2MPrmjovJcoMaHtx6K11Ra7oD05NT97w1IC5zpMkT6Atjr7H8LjaDd81iIxUYpMKSRRNMJE703M1Fhr/TctHw==}
+    dev: false
+
   /immutable/4.3.6:
     resolution: {integrity: sha512-Ju0+lEMyzMVZarkTn/gqRpdqd5dOPaz1mCZ0SH3JV6iFw81PldE/PEB1hWVEA288HPt4WXW8O7AWxB10M+03QQ==}
     dev: true
@@ -2711,6 +2719,16 @@ packages:
     dependencies:
       punycode: 2.3.1
     dev: true
+
+  /use-immer/0.9.0_immer@10.1.1+react@18.3.1:
+    resolution: {integrity: sha512-/L+enLi0nvuZ6j4WlyK0US9/ECUtV5v9RUbtxnn5+WbtaXYUaOBoKHDNL9I5AETdurQ4rIFIj/s+Z5X80ATyKw==}
+    peerDependencies:
+      immer: '>=2.0.0'
+      react: ^16.8.0 || ^17.0.1 || ^18.0.0
+    dependencies:
+      immer: 10.1.1
+      react: 18.3.1
+    dev: false
 
   /vite/5.2.12_@types+node@20.12.13+sass@1.77.2:
     resolution: {integrity: sha512-/gC8GxzxMK5ntBwb48pR32GGhENnjtY30G4A0jemunsBkiEZFw60s8InGpN8gkhHEkjnRK1aSAxeQgwvFhUHAA==}
