@@ -5,13 +5,14 @@ export interface DragSortEvent {
   sourceNode?: HTMLElement;
   target?: HTMLElement;
   targetIndex?: number;
+  data?: any[];
 }
 export interface DragSortConfig {
-  data: any[];
-  activeStyle: {
-    [n:string]: string;
+  data?: any[];
+  activeStyle?: {
+    [n: string]: string;
   };
-  activeClass: string;
+  activeClass?: string;
   onStart?: (e: DragSortEvent) => void;
   onChange?: (e: DragSortEvent) => void;
   onEnd?: (e: DragSortEvent) => void;
@@ -21,13 +22,13 @@ export interface DragSortConfig {
 const defaultConfig = {
   data: [],
   activeStyle: {
-    cursor: "move",
+    cursor: 'move'
   },
-  activeClass: "moving",
+  activeClass: 'moving',
   onStart: (e: DragSortEvent) => {},
   onChange: (e: DragSortEvent) => {},
   onEnd: (e: DragSortEvent) => {},
-  onMove: (e: MouseEvent) => {},
+  onMove: (e: MouseEvent) => {}
 };
 
 export function onDragSort(config: DragSortConfig = defaultConfig) {
@@ -35,29 +36,32 @@ export function onDragSort(config: DragSortConfig = defaultConfig) {
   let children: HTMLElement[];
   let sourceNode: HTMLElement;
   let defatultStyle = {};
+  let data = config.data ? [...config.data] : [];
   const setChildDraggable = () => {
     const cs = Array.from(container.children);
     for (let i = 0; i < cs.length; i++) {
-      cs[i].setAttribute("draggable", true);
+      cs[i].setAttribute('draggable', true);
     }
     children = cs as HTMLElement[];
   };
   const setOneDraggable = () => {
     for (let i = 0; i < children.length; i++) {
       if (children[i] === sourceNode) {
-        children[i].setAttribute("draggable", "true");
+        children[i].setAttribute('draggable', 'true');
       } else {
-        children[i].setAttribute("draggable", "false");
+        children[i].setAttribute('draggable', 'false');
       }
     }
   };
   const swapData = (startIndex: number, targetIndex: number) => {
-    const temp = config.data[startIndex];
-    config.data[startIndex] = config.data[targetIndex];
-    config.data[targetIndex] = temp;
+    if (config.data) {
+      const temp = data[startIndex];
+      data[startIndex] = data[targetIndex];
+      data[targetIndex] = temp;
+    }
   };
   const onDragOver = (e: MouseEvent) => {
-    config.onMove && config.onMove(e:MouseEvent);
+    config.onMove && config.onMove(e);
   };
   const onDragEnd = (e: MouseEvent) => {
     for (let k in config.activeStyle) {
@@ -85,7 +89,7 @@ export function onDragSort(config: DragSortConfig = defaultConfig) {
       config.onStart({
         event: e,
         sourceIndex,
-        sourceNode: sourceNode,
+        sourceNode: sourceNode
       });
   };
   const onDragEnter = (e: MouseEvent) => {
@@ -118,33 +122,26 @@ export function onDragSort(config: DragSortConfig = defaultConfig) {
         sourceNode: sourceNode,
         target,
         targetIndex,
+        data: data
       });
   };
 
   return {
     init(el: HTMLElement) {
       container = el;
-      container.addEventListener(
-        "DOMSubtreeModified",
-        setChildDraggable,
-        false
-      );
+      container.addEventListener('DOMSubtreeModified', setChildDraggable, false);
       setChildDraggable();
-      container.addEventListener("dragstart", onDragStart);
-      container.addEventListener("dragover", onDragOver);
-      container.addEventListener("dragend", onDragEnd);
-      container.addEventListener("dragenter", onDragEnter);
+      container.addEventListener('dragstart', onDragStart);
+      container.addEventListener('dragover', onDragOver);
+      container.addEventListener('dragend', onDragEnd);
+      container.addEventListener('dragenter', onDragEnter);
     },
     destroy() {
-      container.removeEventListener("dragenter", onDragEnter);
-      container.removeEventListener("dragover", onDragOver);
-      container.removeEventListener("dragend", onDragEnd);
-      container.removeEventListener("dragstart", onDragStart);
-      container.removeEventListener(
-        "DOMSubtreeModified",
-        setChildDraggable,
-        false
-      );
-    },
+      container.removeEventListener('dragenter', onDragEnter);
+      container.removeEventListener('dragover', onDragOver);
+      container.removeEventListener('dragend', onDragEnd);
+      container.removeEventListener('dragstart', onDragStart);
+      container.removeEventListener('DOMSubtreeModified', setChildDraggable, false);
+    }
   };
 }
