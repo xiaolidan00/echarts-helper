@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import './index.scss';
 import { type ThemeConfig, theme, ConfigProvider } from 'antd';
-
 const config: ThemeConfig = {
   algorithm: theme.darkAlgorithm
 };

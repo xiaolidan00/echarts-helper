@@ -21,6 +21,9 @@
       color: dodgerblue;
       border: solid 1px dodgerblue;
     }
+    &:not(:last-child) {
+      margin-bottom: 4px;
+    }
   }
   .deleteIcon {
     float: right;
@@ -30,6 +33,7 @@
   .chartOptions {
     height: 40%;
     overflow: auto;
+    padding: 4px;
   }
   .chartSelect {
     height: 60%;
@@ -43,6 +47,7 @@
     .dragBox {
       height: calc(50% - 32px);
       overflow: auto;
+      padding: 4px;
     }
   }
 }

@@ -1,80 +1,53 @@
-import { useEffect, useRef, useState, type DragEvent } from 'react';
+import { useState, type DragEvent } from 'react';
 import styles from './ChartList.module.scss';
 import optionsKeys from './optionsKeys';
-import { useImmer } from 'use-immer';
+
 import { CloseOutlined } from '@ant-design/icons';
-import { onDragSort } from '../../utils/dagSort';
-export const ChartList = () => {
-  const seriesRef = useRef<HTMLDivElement>();
-  const optionsRef = useRef<HTMLDivElement>();
+
+export const ChartList = (props: {
+  chartOptions: string[];
+  chartSeries: string[];
+  onChange: (type: string, v: string[]) => void;
+}) => {
   const [isLock, setIsLock] = useState(false);
-  const [selectOptionsItems, updateOptionsItems] = useImmer<string[]>([]);
-  const [selectSeriesItems, updateSeriesItems] = useImmer<string[]>([]);
 
   let dragItem: HTMLElement;
   const onDrag = (ev: DragEvent) => {
     dragItem = ev.target as HTMLElement;
   };
-  const lock = {
-    series: false
-  };
   const onDragItem = (type: string) => {
-    const item = dragItem.dataset.item;
+    const item = dragItem.dataset.item as string;
     if (type === 'series') {
       if (isLock || !item) return;
       if (item.indexOf('series') === -1) return;
 
       setIsLock(true);
-      updateSeriesItems((a) => {
-        a.push(item);
-      });
+      const v = props.chartSeries;
+      v.push(item);
+      props.onChange(type, [...v]);
+
       setTimeout(() => {
         setIsLock(false);
       }, 1000);
     } else {
-      if (item && (item.indexOf('series') > -1 || selectOptionsItems.includes(item))) return;
-      updateOptionsItems((a) => {
-        a.push(item);
-      });
+      if (item && (item.indexOf('series') > -1 || props.chartOptions.includes(item))) return;
+      const v = props.chartOptions;
+      v.push(item);
+      props.onChange(type, [...v]);
     }
   };
   const onDelItem = (type: string, idx: number) => {
     if (type === 'series') {
-      updateSeriesItems((a) => {
-        a.splice(idx, 1);
-      });
+      const v = props.chartSeries;
+      v.splice(idx, 1);
+      props.onChange(type, [...v]);
     } else {
-      updateOptionsItems((a) => {
-        a.splice(idx, 1);
-      });
+      const v = props.chartOptions;
+      v.splice(idx, 1);
+      props.onChange(type, [...v]);
     }
   };
-  const dragSortOp = onDragSort({
-    onEnd: ({ sourceIndex, targetIndex }) => {
-      updateOptionsItems((data) => {
-        const temp = data[sourceIndex];
-        data[sourceIndex] = data[targetIndex];
-        data[targetIndex] = temp;
-      });
-    }
-  });
-  const dragSortSeries = onDragSort({
-    onEnd: ({ sourceIndex, targetIndex }) => {
-      updateSeriesItems((data) => {
-        const temp = data[sourceIndex];
-        data[sourceIndex] = data[targetIndex];
-        data[targetIndex] = temp;
-      });
-    }
-  });
-  useEffect(() => {
-    dragSortOp.init(optionsRef.current as HTMLElement);
-    dragSortSeries.init(seriesRef.current as HTMLElement);
-    return () => {
-      dragSortOp.destroy();
-      dragSortSeries.destroy();
-    };
-  }, []);
+
   return (
     <div className={styles.chartList}>
       <div className={styles.chartOptions}>
@@ -86,8 +59,8 @@ export const ChartList = () => {
       </div>
       <div className={styles.chartSelect}>
         <div className={styles.title}>配置项</div>
-        <div className={styles.dragBox} ref={optionsRef} onDragEnter={() => onDragItem('options')}>
-          {selectOptionsItems.map((it, idx) => (
+        <div className={styles.dragBox} onDragEnter={() => onDragItem('options')}>
+          {props.chartOptions.map((it, idx) => (
             <span
               data-item={it}
               onClick={() => onDelItem('options', idx)}
@@ -99,8 +72,8 @@ export const ChartList = () => {
           ))}
         </div>
         <div className={styles.title}>系列</div>
-        <div className={styles.dragBox} ref={seriesRef} onDragEnter={() => onDragItem('series')}>
-          {selectSeriesItems.map((it, idx) => (
+        <div className={styles.dragBox} onDragEnter={() => onDragItem('series')}>
+          {props.chartSeries.map((it, idx) => (
             <span data-item={it} className={styles.optionItem} key={'s-' + it + idx}>
               {it} <CloseOutlined onClick={() => onDelItem('series', idx)} className={styles.deleteIcon} />
             </span>

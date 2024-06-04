@@ -1,35 +1,38 @@
-import { useCallback, useEffect, useState } from 'react';
-import axios from 'axios';
-import { FormList, type FormItemConfig, type FormItemValue } from './components/FormList/FormList';
+import { RightPanel } from './components/RightPanel/RightPanel';
 import { ChartList } from './components/ChartList/ChartList';
+import { useState } from 'react';
+import { FormItemValue } from './components/FormList/FormList';
 
 function App() {
-  const [value, setValue] = useState({});
-  const [formConfig, setFormConfig] = useState<Array<FormItemConfig>>([]);
-  useEffect(() => {
-    axios.get('/form/title.json').then(({ data }) => {
-      setFormConfig(data as FormItemConfig[]);
-    });
-  }, []);
-  const onChangeValue = (v: FormItemValue) => {
-    setValue(v);
-    console.log(v);
+  const [chartOptions, setChartOptions] = useState<string[]>([]);
+  const [chartSeries, setChartSeries] = useState<string[]>([]);
+  const [optionsConfig, setOptionsConfig] = useState<FormItemValue>({});
+  const [seriesConfig, setSeriesConfig] = useState<FormItemValue>({});
+  const onChangeList = (type: string, v: string[]) => {
+    if (type === 'series') {
+      setChartSeries(v);
+    } else {
+      setChartOptions(v);
+    }
   };
-
+  const onChangeConfig = ({ type, v }: { type: string; v: FormItemValue }) => {
+    if (type == 'series') {
+      setSeriesConfig(v);
+    } else {
+      setOptionsConfig(v);
+    }
+  };
   return (
     <>
-      <ChartList></ChartList>
+      <ChartList chartOptions={chartOptions} chartSeries={chartSeries} onChange={onChangeList}></ChartList>
       <div className="chartContent"></div>
-      <div className="rightPanel">
-        <FormList
-          title="title"
-          parent="title"
-          parentCode="title"
-          config={formConfig}
-          value={value}
-          onChange={onChangeValue}
-        ></FormList>
-      </div>
+      <RightPanel
+        chartOptions={chartOptions}
+        chartSeries={chartSeries}
+        optionsConfig={optionsConfig}
+        seriesConfig={seriesConfig}
+        onChange={onChangeConfig}
+      ></RightPanel>
     </>
   );
 }
