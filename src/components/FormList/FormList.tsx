@@ -1,5 +1,5 @@
-import { InputNumber, Input, ColorPicker, Select, Checkbox } from 'antd';
-import { CaretRightOutlined, CaretDownOutlined, DeleteOutlined } from '@ant-design/icons';
+import { InputNumber, Input, ColorPicker, Select, Checkbox, Tabs, type TabsProps, Empty } from 'antd';
+import { CaretRightOutlined, CaretDownOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import styles from './FormList.module.scss';
 import { useMemo, useState, memo, useEffect } from 'react';
 import { getFlatObj, setFlatObj } from '../../utils/flatObj';
@@ -10,7 +10,8 @@ const compMap = {
   color: ColorPicker,
   select: Select,
   boolean: Checkbox,
-  children: ''
+  children: '',
+  multi: ''
 };
 export interface FormItemConfig {
   inputType: keyof typeof compMap;
@@ -24,6 +25,7 @@ export interface FormItemConfig {
   nextCode?: string;
   title?: string;
   config?: Array<FormItemConfig>;
+  isArr?: boolean;
 }
 
 export interface FormItemValue {
@@ -34,7 +36,7 @@ export const FormItem = memo(
   (
     props: FormItemConfig & {
       value: unknown;
-      parent: string;
+
       onChange: (code: string, value: any) => void;
     }
   ) => {
@@ -59,7 +61,7 @@ export const FormItem = memo(
         <span className={styles.formInput}>
           <InputEl
             style={{ width: '100%' }}
-            defaultValue={props.value}
+            value={props.value}
             min={props.min}
             max={props.max}
             step={props.step}
@@ -75,45 +77,160 @@ export const FormItem = memo(
     );
   }
 );
-export const FormList = memo(
-  (props: {
-    title: string;
-    isNextCode?: boolean;
-    config: Array<FormItemConfig>;
-    value: FormItemValue;
-    onChange: (val: FormItemValue) => void;
-    parentCode: string;
-    parent: string;
-    isArr?: boolean;
-  }) => {
-    const [isShow, setIsShow] = useState(false);
-    const onChangeItem = (code: string, value: any) => {
-      let v = props.value ? props.value : {};
-      setFlatObj(v, (props.parent + '.' || '') + code, value);
-      if (props.isArr && !Array.isArray(v)) {
-        const keys = Object.keys(v).sort((a, b) => Number(a) - Number(b));
-        const arr = [];
-        keys.forEach((it) => {
-          arr[it] = v[it];
-        });
-        v = arr;
-      }
-      props.onChange(v);
-    };
-    const changeShow = () => {
-      setIsShow(!isShow);
-    };
-    const list = [];
+export const FormArr = (props: {
+  title: string;
+  config: Array<FormItemConfig>;
+  value: FormItemValue;
+  code: string;
+  onChange: (code: string, val: FormItemValue) => void;
+}) => {
+  const [propVal, setPropVal] = useState(props.value || []);
+  const [isShow, setIsShow] = useState(false);
+  const [selectTab, setSelectTab] = useState('1');
+  const [currentVal, setCurrentVal] = useState({});
+  const changeShow = () => {
+    setIsShow(!isShow);
+  };
+  const onChangeVal = (value: FormItemValue) => {
+    const v = propVal;
+    v[Number(selectTab) - 1] = value;
+    setPropVal(v);
+    props.onChange(props.code, v);
+  };
+  const items: TabsProps['items'] = [];
+  const newconfig = useMemo(() => props.config.map((it) => ({ ...it, code: it.nextCode })), [props.config]);
 
-    for (let i = 0; i < props.config.length; i++) {
-      const item = props.config[i];
+  for (let i = 0; i < propVal.length; i++) {
+    const idx = i + 1 + '';
+    items.push({
+      key: idx,
+      label: props.title + idx
+    });
+  }
+  const onChangeTab = (tab: string) => {
+    setSelectTab(tab);
+    setCurrentVal(propVal[Number(tab) - 1]);
+  };
+  const onAdd = () => {
+    const v = propVal;
+    v.push({});
+    setPropVal(v);
+    props.onChange(props.code, v);
 
-      if (item.inputType === 'children') {
+    onChangeTab(v.length + '');
+  };
+  const onDel = () => {
+    const i = Number(selectTab) - 1;
+    const v = propVal;
+    v.splice(i, 1);
+    setPropVal(v);
+    props.onChange(props.code, v);
+    if (selectTab > v.length) {
+      onChangeTab(v.length + '');
+    }
+  };
+  useEffect(() => {
+    setCurrentVal(propVal[Number(selectTab) - 1]);
+    return () => {};
+  }, []);
+
+  return (
+    <div className={styles.formList}>
+      <div className={styles.formTitle}>
+        <span onClick={changeShow}>
+          {isShow ? <CaretDownOutlined /> : <CaretRightOutlined />} {props.title}
+        </span>
+
+        <span className={styles.formTitleRight}>
+          <PlusOutlined onClick={onAdd} /> <DeleteOutlined onClick={onDel} />
+        </span>
+      </div>
+      {isShow ? (
+        propVal.length ? (
+          <div className={styles.formArr}>
+            <Tabs activeKey={selectTab} items={items} onChange={onChangeTab} />
+
+            <FormList
+              value={currentVal}
+              config={newconfig as FormItemConfig[]}
+              parent=""
+              parentCode=""
+              onChange={onChangeVal}
+            ></FormList>
+          </div>
+        ) : (
+          <Empty />
+        )
+      ) : (
+        ''
+      )}
+    </div>
+  );
+};
+
+export const FormList = (props: {
+  title?: string;
+  isNextCode?: boolean;
+  config: Array<FormItemConfig>;
+  value: FormItemValue;
+  onChange: (val: FormItemValue) => void;
+  parentCode: string;
+  parent: string;
+  isArr?: boolean;
+}) => {
+  const initVal = props.isArr ? [] : {};
+  const [propVal, setPropVal] = useState(props.value || initVal);
+  const [isShow, setIsShow] = useState(false);
+  const onChangeItem = (code: string, value: any) => {
+    let v = propVal;
+    setFlatObj(v, (props.parent + '.' || '') + code, value);
+    if (props.isArr && !Array.isArray(v)) {
+      const keys = Object.keys(v).sort((a, b) => Number(a) - Number(b));
+      const arr = [];
+      keys.forEach((it) => {
+        arr[it] = v[it];
+      });
+      v = arr;
+    }
+    setPropVal(v);
+    props.onChange(v);
+  };
+  const changeShow = () => {
+    setIsShow(!isShow);
+  };
+  const onChangeArr = (code: string, value: FormItemValue) => {
+    const v = propVal;
+    setFlatObj(v, code, value);
+    props.onChange(v);
+  };
+  const getFormItem = (item: FormItemConfig, key: string) => {
+    const val = getFlatObj(propVal, key) || item.default;
+    return <FormItem {...item} value={val} key={key} code={item.code} onChange={onChangeItem} />;
+  };
+  const list = [];
+
+  for (let i = 0; i < props.config.length; i++) {
+    const item = props.config[i];
+    const key = (props.parent + '.' || '') + item.code;
+    if (item.inputType === 'children') {
+      if (item.isArr) {
+        const val = getFlatObj(propVal, key);
+        list.push(
+          <FormArr
+            title={item.title as string}
+            value={val}
+            key={item.title}
+            code={key}
+            config={item.config as Array<FormItemConfig>}
+            onChange={onChangeArr}
+          ></FormArr>
+        );
+      } else {
         list.push(
           <FormList
             isNextCode={true}
             title={item.title as string}
-            value={props.value}
+            value={propVal}
             key={item.title}
             config={item.config as Array<FormItemConfig>}
             parentCode={props.parentCode + '.' + item.title}
@@ -121,47 +238,33 @@ export const FormList = memo(
             parent={props.parent}
           />
         );
-      } else {
-        const key = (props.parent + '.' || '') + item.code;
-        const val = getFlatObj(props.value, key) || item.default;
-        list.push(<FormItem {...item} parent={props.parent} value={val} key={key} onChange={onChangeItem} />);
       }
+    } else if (item.inputType === 'multi') {
+      const cfg = item.config as FormItemConfig[];
+      const items = [];
+      for (let j = 0; j < cfg?.length; j++) {
+        const it = cfg[j];
+        const kk = (props.parent + '.' || '') + it.code;
+        items.push(getFormItem(it, kk));
+      }
+      list.push(<div key={key}>{items}</div>);
+    } else {
+      list.push(getFormItem(item, key));
     }
+  }
 
-    // const isItem = useMemo(() => getFlatObj(props.value, props.parentCode), [props.value, props.parentCode]);
-
-    // const onChangeTitle = () => {
-    //   if (isItem) {
-    //     const v = cloneDeep(props.value);
-    //     const code = props.parentCode;
-    //     setFlatObj(v, code, undefined);
-    //     props.onChange(v);
-    //   }
-    // };
-    return (
-      <div className={styles.formList}>
+  return (
+    <div className={styles.formList}>
+      {props.title ? (
         <div className={styles.formTitle}>
           <span onClick={changeShow}>
             {isShow ? <CaretDownOutlined /> : <CaretRightOutlined />} {props.title}
           </span>
-          {/* {isItem && props.isNextCode ? (
-            <span className={styles.formTitleRight} onClick={onChangeTitle}>
-              <DeleteOutlined />
-            </span>
-          ) : (
-            ''
-          )} */}
         </div>
-
-        <div
-          className={props.isNextCode ? styles.formChild : ''}
-          style={{
-            display: isShow ? '' : 'none'
-          }}
-        >
-          {list}
-        </div>
-      </div>
-    );
-  }
-);
+      ) : (
+        ''
+      )}
+      {isShow || !props.title ? <div className={props.isNextCode ? styles.formChild : ''}>{list}</div> : ''}
+    </div>
+  );
+};

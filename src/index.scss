@@ -30,6 +30,11 @@ body {
 }
 .chartContent {
   flex: 1;
+  overflow: hidden;
+  .chartBox {
+    height: 100%;
+    width: 100%;
+  }
 }
 .rightPanel {
   width: 350px;

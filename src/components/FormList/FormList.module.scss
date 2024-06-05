@@ -16,6 +16,11 @@
   .formTitleRight {
     float: right;
   }
+  .formArr {
+    padding: 0 10px 10px 10px;
+
+    border-bottom: var(--form-border);
+  }
   .formItem {
     display: flex;
     height: 40px;

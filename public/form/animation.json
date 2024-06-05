@@ -1,1 +1,1 @@
-[{"code":"desc","inputType":"text","label":"desc"},{"code":"uiControl","inputType":"text","label":"uiControl"}]
+[{"code":"animation","inputType":"boolean","label":"animation","default":true}]

@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import options from './options.js';
+import cheerio from 'cheerio';
 const labelKey = {
   show: '显示',
   color: '颜色',
@@ -30,7 +31,11 @@ async function transformEchartsItem(name, cfg) {
   try {
     data = await import(`./echarts/${name}.js`).then((res) => res.default);
   } catch (error) {
-    data = cfg;
+    if (cfg.uiControl) {
+      data = { [name]: cfg };
+    } else {
+      return;
+    }
   }
   const list = [];
   for (let k in data) {
@@ -39,7 +44,25 @@ async function transformEchartsItem(name, cfg) {
     const c = item.uiControl;
     const key = k.substring(k.lastIndexOf('.') + 1);
     const set = { inputType: 'text', label: key };
-    if (c) {
+    if (!c && item.desc.indexOf('可选：</p>\n<ul>') > -1) {
+      const $ = cheerio.load(item.desc);
+      set.inputType = 'select';
+      let ops = [];
+      let df = '';
+      $('ul>li').each((i, a) => {
+        const code = $(a).find('code.codespan')[0];
+        const b = $(code).text().replace(/'/g, '');
+        ops.push(b);
+        const t = $(a).text();
+        if (t.indexOf('默认') > -1) {
+          df = b;
+        }
+      });
+      set.options = ops;
+      if (df) {
+        set.options.default = df;
+      }
+    } else if (c) {
       if (c.type === 'enum') {
         set.inputType = 'select';
         set.options = c.options.split(',');
@@ -74,7 +97,7 @@ async function transformEchartsItem(name, cfg) {
   console.log(name + ' ok');
 }
 function getChildForm(formList) {
-  const list = [];
+  let list = [];
   const listMap = {};
   formList.forEach((item) => {
     const c = item.nextCode || item.code;
@@ -94,11 +117,14 @@ function getChildForm(formList) {
     }
   });
   if (Object.keys(listMap).length) {
+    list = list.filter((a) => !listMap[a.nextCode || a.code]);
+
     for (const k in listMap) {
       list.push({
         inputType: 'children',
-        isArr: k === 'data',
+        isArr: ['data', 'indicator'].includes(k),
         title: k,
+        code: k,
         config: getChildForm(listMap[k])
       });
     }
@@ -111,3 +137,4 @@ async function getFroms() {
   }
 }
 getFroms();
+// transformEchartsItem('tooltip');

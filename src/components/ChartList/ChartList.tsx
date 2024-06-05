@@ -61,13 +61,8 @@ export const ChartList = (props: {
         <div className={styles.title}>配置项</div>
         <div className={styles.dragBox} onDragEnter={() => onDragItem('options')}>
           {props.chartOptions.map((it, idx) => (
-            <span
-              data-item={it}
-              onClick={() => onDelItem('options', idx)}
-              className={styles.optionItem}
-              key={'op-' + it + idx}
-            >
-              {it} <CloseOutlined className={styles.deleteIcon} />
+            <span data-item={it} className={styles.optionItem} key={'op-' + it + idx}>
+              {it} <CloseOutlined onClick={() => onDelItem('options', idx)} className={styles.deleteIcon} />
             </span>
           ))}
         </div>

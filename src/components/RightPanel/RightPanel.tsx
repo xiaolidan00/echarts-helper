@@ -19,6 +19,7 @@ function getConfigJSON(name: string) {
         .get(`/form/${name}.json`)
         .then(({ data }) => {
           configMap[name] = data as Array<FormItemConfig>;
+
           resolve(data);
         })
         .catch(() => {
@@ -54,7 +55,7 @@ export const RightPanel = (props: {
       setOptionsList(list);
     }
     {
-      const s = props.optionsConfig;
+      const s = props.seriesConfig;
       const list: FormConfig[] = [];
       for (let i = 0; i < props.chartSeries.length; i++) {
         const item = props.chartSeries[i];
@@ -62,7 +63,7 @@ export const RightPanel = (props: {
         list.push({ title: item, config: set } as FormItemConfig);
         if (!props.seriesConfig[i]) {
           const type = item.substring(item.indexOf('-') + 1);
-          s[i] = { type };
+          s[i] = { type, data: [] };
         }
       }
       onChangeSeries(s);
