@@ -19,7 +19,6 @@ function getConfigJSON(name: string) {
         .get(`/form/${name}.json`)
         .then(({ data }) => {
           configMap[name] = data as Array<FormItemConfig>;
-
           resolve(data);
         })
         .catch(() => {
@@ -40,6 +39,7 @@ export const RightPanel = (props: {
     props.onChange({ type: 'options', v });
     console.log(v);
   };
+  const [baseOpList, setBaseOpList] = useState<FormItemConfig[]>([]);
   const [optionsList, setOptionsList] = useState<FormConfig[]>([]);
 
   const [seriesList, setSeriesList] = useState<FormConfig[]>([]);
@@ -47,11 +47,17 @@ export const RightPanel = (props: {
   const updatePanel = async () => {
     {
       const list: FormConfig[] = [];
+      const baseList: FormItemConfig[] = [];
       for (let i = 0; i < props.chartOptions.length; i++) {
         const item = props.chartOptions[i];
         const set = await getConfigJSON(item);
-        list.push({ title: item, config: set } as FormItemConfig);
+        if (set.length === 1) {
+          baseList.push(set[0]);
+        } else {
+          list.push({ title: item, config: set } as FormConfig);
+        }
       }
+      setBaseOpList(baseList);
       setOptionsList(list);
     }
     {
@@ -81,6 +87,7 @@ export const RightPanel = (props: {
   }, [props.chartOptions, props.chartSeries]);
   return (
     <div className="rightPanel">
+      <FormList config={baseOpList} value={props.optionsConfig} onChange={onChangeValue}></FormList>
       {optionsList.map((it) => (
         <FormList
           title={it.title}

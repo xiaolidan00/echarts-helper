@@ -1,17 +1,35 @@
 import * as echarts from 'echarts';
 import type { ECharts } from 'echarts';
 import { FormItemValue } from '../FormList/FormList';
-import { useEffect, useRef } from 'react';
+import { useEffect, useImperativeHandle, useRef, type RefObject } from 'react';
 import { Button } from 'antd';
-export const ChartContent = (props: { optionsConfig: FormItemValue; seriesConfig: FormItemValue }) => {
-  const chartRef = useRef<HTMLDivElement>();
+export const ChartContent = (props: {
+  onRef: RefObject<any>;
+  optionsConfig: FormItemValue;
+  seriesConfig: FormItemValue;
+}) => {
+  const chartRef = useRef<HTMLDivElement>(null);
   let chart: ECharts;
   const createChart = () => {
     if (!chart) {
       chart = echarts.init(chartRef.current);
     }
+    chart.clear();
+
     const options = { ...props.optionsConfig, series: props.seriesConfig };
-    chart.setOption(options);
+    chart.setOption(
+      JSON.parse(JSON.stringify(options), (key, value) => {
+        if (
+          ['value', 'position', 'center', 'data'].includes(key) &&
+          value &&
+          typeof value === 'string' &&
+          value.indexOf(',')
+        ) {
+          return value.split(',');
+        }
+        return value;
+      })
+    );
     chart.resize();
     console.log('options', options);
   };
@@ -20,6 +38,14 @@ export const ChartContent = (props: { optionsConfig: FormItemValue; seriesConfig
       chart.resize();
     }
   };
+  useImperativeHandle(props.onRef, () => ({
+    createChart
+  }));
+  // useEffect(() => {
+  //   if (chart) {
+  //     createChart();
+  //   }
+  // }, [props.seriesConfig, props.optionsConfig]);
 
   useEffect(() => {
     window.addEventListener('resize', onResize);

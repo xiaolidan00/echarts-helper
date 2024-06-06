@@ -1,4 +1,4 @@
-import { useState, type DragEvent } from 'react';
+import { useEffect, useState, type DragEvent } from 'react';
 import styles from './ChartList.module.scss';
 import optionsKeys from './optionsKeys';
 

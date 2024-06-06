@@ -42,3 +42,29 @@ body {
   overflow: auto;
   border-left: var(--form-border);
 }
+
+.baseChart {
+  display: inline-flex;
+  position: fixed;
+  top: 0;
+  width: 500px;
+  height: 30px;
+  line-height: 30px;
+  left: calc(50% - 250px);
+  z-index: 2;
+  > span {
+    cursor: pointer;
+    display: inline-block;
+    height: 100%;
+    flex: 1;
+    text-align: center;
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+    &:hover {
+      color: dodgerblue;
+    }
+    &:not(:last-child) {
+      margin-right: 10px;
+    }
+  }
+}

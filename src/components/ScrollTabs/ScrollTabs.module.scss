@@ -1,0 +1,34 @@
+.scrollTabs {
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  scrollbar-width: none;
+  user-select: none;
+  scroll-behavior: smooth;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  .tabContainer {
+    overflow: hidden;
+    width: calc(100% - 40px);
+    > ul {
+      padding: 0;
+      margin: 0;
+
+      display: block;
+      white-space: nowrap;
+      list-style: none;
+      transition: all 0.5s ease;
+      > li {
+        cursor: pointer;
+        list-style: none;
+        display: inline-block;
+        text-align: center;
+        &.active {
+          color: dodgerblue;
+          border-bottom: solid 2px dodgerblue;
+        }
+      }
+    }
+  }
+}

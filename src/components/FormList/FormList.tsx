@@ -1,8 +1,9 @@
-import { InputNumber, Input, ColorPicker, Select, Checkbox, Tabs, type TabsProps, Empty } from 'antd';
+import { InputNumber, Input, ColorPicker, Select, Checkbox, Empty } from 'antd';
 import { CaretRightOutlined, CaretDownOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import styles from './FormList.module.scss';
 import { useMemo, useState, memo, useEffect } from 'react';
 import { getFlatObj, setFlatObj } from '../../utils/flatObj';
+import { ScrollTabs, type TabsItem } from '../ScrollTabs/ScrollTabs';
 
 const compMap = {
   number: InputNumber,
@@ -86,30 +87,30 @@ export const FormArr = (props: {
 }) => {
   const [propVal, setPropVal] = useState(props.value || []);
   const [isShow, setIsShow] = useState(false);
-  const [selectTab, setSelectTab] = useState('1');
+  const [selectTab, setSelectTab] = useState(0);
   const [currentVal, setCurrentVal] = useState({});
   const changeShow = () => {
     setIsShow(!isShow);
   };
   const onChangeVal = (value: FormItemValue) => {
     const v = propVal;
-    v[Number(selectTab) - 1] = value;
+    v[selectTab] = value;
     setPropVal(v);
     props.onChange(props.code, v);
   };
-  const items: TabsProps['items'] = [];
+  const items: TabsItem[] = [];
   const newconfig = useMemo(() => props.config.map((it) => ({ ...it, code: it.nextCode })), [props.config]);
 
   for (let i = 0; i < propVal.length; i++) {
     const idx = i + 1 + '';
     items.push({
-      key: idx,
+      value: i,
       label: props.title + idx
     });
   }
-  const onChangeTab = (tab: string) => {
-    setSelectTab(tab);
-    setCurrentVal(propVal[Number(tab) - 1]);
+  const onChangeTab = (tab: string | number) => {
+    setSelectTab(tab as number);
+    setCurrentVal({ ...propVal[tab] });
   };
   const onAdd = () => {
     const v = propVal;
@@ -117,20 +118,20 @@ export const FormArr = (props: {
     setPropVal(v);
     props.onChange(props.code, v);
 
-    onChangeTab(v.length + '');
+    onChangeTab(v.length - 1);
   };
   const onDel = () => {
-    const i = Number(selectTab) - 1;
+    const i = selectTab;
     const v = propVal;
     v.splice(i, 1);
     setPropVal(v);
     props.onChange(props.code, v);
-    if (selectTab > v.length) {
-      onChangeTab(v.length + '');
+    if (selectTab > v.length - 1) {
+      onChangeTab(v.length - 1);
     }
   };
   useEffect(() => {
-    setCurrentVal(propVal[Number(selectTab) - 1]);
+    setCurrentVal(propVal[selectTab]);
     return () => {};
   }, []);
 
@@ -148,13 +149,13 @@ export const FormArr = (props: {
       {isShow ? (
         propVal.length ? (
           <div className={styles.formArr}>
-            <Tabs activeKey={selectTab} items={items} onChange={onChangeTab} />
+            <ScrollTabs tabs={items} active={selectTab} onChange={onChangeTab} itemWidth={60}></ScrollTabs>
 
             <FormList
-              value={currentVal}
-              config={newconfig as FormItemConfig[]}
               parent=""
               parentCode=""
+              value={currentVal}
+              config={newconfig as FormItemConfig[]}
               onChange={onChangeVal}
             ></FormList>
           </div>
@@ -174,13 +175,17 @@ export const FormList = (props: {
   config: Array<FormItemConfig>;
   value: FormItemValue;
   onChange: (val: FormItemValue) => void;
-  parentCode: string;
-  parent: string;
+  parentCode?: string;
+  parent?: string;
   isArr?: boolean;
 }) => {
   const initVal = props.isArr ? [] : {};
   const [propVal, setPropVal] = useState(props.value || initVal);
   const [isShow, setIsShow] = useState(false);
+  useEffect(() => {
+    setPropVal(props.value);
+    return () => {};
+  }, [props.value]);
   const onChangeItem = (code: string, value: any) => {
     let v = propVal;
     setFlatObj(v, (props.parent + '.' || '') + code, value);
@@ -233,7 +238,7 @@ export const FormList = (props: {
             value={propVal}
             key={item.title}
             config={item.config as Array<FormItemConfig>}
-            parentCode={props.parentCode + '.' + item.title}
+            parentCode={(props.parentCode || '') + '.' + item.title}
             onChange={props.onChange}
             parent={props.parent}
           />
