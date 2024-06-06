@@ -1,31 +1,31 @@
 import fs from 'node:fs';
 import options from './options.js';
 import cheerio from 'cheerio';
-const labelKey = {
-  show: '显示',
-  color: '颜色',
-  formatter: '格式化',
-  borderType: '边框类型',
-  borderColor: '边框颜色',
-  borderWidth: '边框粗细',
-  backgroundColor: '背景颜色',
-  borderRadius: '圆角',
-  center: '中心位置',
-  padding: '内边距',
-  fontSize: '字体大小',
-  fontFamily: '字体系列',
-  fontWeight: '字体粗细',
-  fontStyle: '字体样式',
-  lineHeight: '行高',
-  width: '宽度',
-  height: '高度',
-  symbol: '形状',
-  symbolSize: '形状大小',
-  symbolOffset: '形状偏移',
-  shadowBlur: '阴影大小',
-  shadowColor: '阴影颜色',
-  shadowOffsetX: ''
-};
+// const labelKey = {
+//   show: '显示',
+//   color: '颜色',
+//   formatter: '格式化',
+//   borderType: '边框类型',
+//   borderColor: '边框颜色',
+//   borderWidth: '边框粗细',
+//   backgroundColor: '背景颜色',
+//   borderRadius: '圆角',
+//   center: '中心位置',
+//   padding: '内边距',
+//   fontSize: '字体大小',
+//   fontFamily: '字体系列',
+//   fontWeight: '字体粗细',
+//   fontStyle: '字体样式',
+//   lineHeight: '行高',
+//   width: '宽度',
+//   height: '高度',
+//   symbol: '形状',
+//   symbolSize: '形状大小',
+//   symbolOffset: '形状偏移',
+//   shadowBlur: '阴影大小',
+//   shadowColor: '阴影颜色',
+//   shadowOffsetX: ''
+// };
 async function transformEchartsItem(name, cfg) {
   let data;
   try {

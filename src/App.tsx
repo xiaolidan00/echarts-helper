@@ -5,21 +5,23 @@ import { FormItemValue } from './components/FormList/FormList';
 import { ChartContent } from './components/ChartContent/ChartContent';
 import * as baseChart from './config/baseChart';
 import { cloneDeep } from 'lodash-es';
-
+interface CfgMap {
+  [n: string]: number;
+}
 function App() {
   const [chartOptions, setChartOptions] = useState<string[]>([]);
   const [chartSeries, setChartSeries] = useState<string[]>([]);
   const [optionsConfig, setOptionsConfig] = useState<FormItemValue>({});
   const [seriesConfig, setSeriesConfig] = useState<FormItemValue>([]);
-  const chartRef = useRef(null);
+  const chartRef = useRef<{ createChart: () => void }>(null);
   const onChangeList = (type: string, v: string[]) => {
     if (type === 'series') {
-      const map = {};
+      const map: CfgMap = {};
       v.forEach((a) => {
         map[a] = 1;
       });
       const cfg = seriesConfig;
-      for (let k in cfg) {
+      for (const k in cfg) {
         if (!map[k]) {
           delete cfg[k];
         }
@@ -27,12 +29,12 @@ function App() {
       setSeriesConfig(cfg);
       setChartSeries(v);
     } else {
-      const map = {};
+      const map: CfgMap = {};
       v.forEach((a) => {
         map[a] = 1;
       });
       const cfg = optionsConfig;
-      for (let k in cfg) {
+      for (const k in cfg) {
         if (!map[k]) {
           delete cfg[k];
         }
@@ -73,7 +75,8 @@ function App() {
   //   return () => {};
   // }, []);
   const baseChartKeys = Object.keys(baseChart);
-  const onBaseChart = (item: keyof typeof baseChart) => {
+  const onBaseChart = (c: string) => {
+    const item = c as keyof typeof baseChart;
     console.log('onBaseChart', item);
     const op = cloneDeep(baseChart[item]);
     const ops = [];
@@ -93,13 +96,13 @@ function App() {
     op.series.forEach((it) => {
       s.push('series-' + it.type);
       if (typeof it.data[0] === 'number') {
-        it.data.forEach((a, i: number) => {
+        (it.data as Array<any>).forEach((a, i: number) => {
           it.data[i] = { value: a };
         });
       }
       if (typeof it.data[0] === 'object' && Array.isArray(it.data[0].value)) {
-        it.data.forEach((a, i) => {
-          a.value = a.value.join(',');
+        it.data.forEach((a) => {
+          a.value = (a.value as Array<number>).join(',');
         });
       }
     });

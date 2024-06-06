@@ -4,7 +4,6 @@
   line-height: 30px;
   scrollbar-width: none;
   user-select: none;
-  scroll-behavior: smooth;
   font-size: 14px;
   display: flex;
   align-items: center;
@@ -14,7 +13,6 @@
     > ul {
       padding: 0;
       margin: 0;
-
       display: block;
       white-space: nowrap;
       list-style: none;

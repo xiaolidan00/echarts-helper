@@ -1,10 +1,10 @@
 import * as echarts from 'echarts';
 import type { ECharts } from 'echarts';
 import { FormItemValue } from '../FormList/FormList';
-import { useEffect, useImperativeHandle, useRef, type RefObject } from 'react';
+import { useEffect, useImperativeHandle, useRef, type Ref } from 'react';
 import { Button } from 'antd';
 export const ChartContent = (props: {
-  onRef: RefObject<any>;
+  onRef: Ref<{ createChart: () => void }>;
   optionsConfig: FormItemValue;
   seriesConfig: FormItemValue;
 }) => {
