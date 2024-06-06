@@ -79,10 +79,10 @@ function App() {
     const item = c as keyof typeof baseChart;
     console.log('onBaseChart', item);
     const op = cloneDeep(baseChart[item]);
-    const ops = [];
+    const ops: string[] = [];
     const opCfg: FormItemValue = {};
     for (const k in op) {
-      if (k != 'series') {
+      if (k !== 'series') {
         ops.push(k);
         opCfg[k] = op[k as keyof typeof op];
         if (opCfg[k].data && Array.isArray(opCfg[k].data) && typeof opCfg[k].data[0] === 'string') {

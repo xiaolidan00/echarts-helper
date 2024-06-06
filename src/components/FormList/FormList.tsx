@@ -192,7 +192,7 @@ export const FormList = memo(
       setFlatObj(v, (props.parent + '.' || '') + code, value);
       if (props.isArr && !Array.isArray(v)) {
         const keys = Object.keys(v).sort((a, b) => Number(a) - Number(b));
-        const arr = [];
+        const arr: FormItemValue = [];
         keys.forEach((it) => {
           arr[it] = v[it];
         });
