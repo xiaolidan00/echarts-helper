@@ -1,7 +1,8 @@
-import { FormItemConfig, FormItemValue, FormList } from '../FormList/FormList';
+import { FormList } from '../FormList/FormList';
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { FormChildConfig, FormItemConfig, FormItemValue } from '../FormList/config';
 interface configMap {
   [n: string]: Array<FormItemConfig>;
 }
@@ -12,7 +13,7 @@ interface FormConfig {
 
 const configMap: configMap = {};
 function getConfigJSON(name: string) {
-  return new Promise((resolve) => {
+  return new Promise<Array<FormItemConfig>>((resolve) => {
     if (configMap[name]) resolve(configMap[name]);
     else
       axios
@@ -54,7 +55,7 @@ export const RightPanel = (props: {
         if (set.length === 1) {
           baseList.push(set[0]);
         } else {
-          list.push({ title: item, config: set } as FormConfig);
+          list.push({ title: item, config: set, code: item } as FormChildConfig);
         }
       }
       setBaseOpList(baseList);
@@ -66,7 +67,7 @@ export const RightPanel = (props: {
       for (let i = 0; i < props.chartSeries.length; i++) {
         const item = props.chartSeries[i];
         const set = await getConfigJSON(item);
-        list.push({ title: item, config: set } as FormItemConfig);
+        list.push({ title: item, config: set, code: item } as FormChildConfig);
         if (!props.seriesConfig[i]) {
           const type = item.substring(item.indexOf('-') + 1);
           s[i] = { type, data: [] };
@@ -92,7 +93,6 @@ export const RightPanel = (props: {
         <FormList
           title={it.title}
           parent={it.title}
-          parentCode={it.title}
           config={it.config}
           value={props.optionsConfig}
           key={it.title}
@@ -103,7 +103,6 @@ export const RightPanel = (props: {
         <FormList
           title={i + 1 + '.' + it.title}
           parent={i + ''}
-          parentCode={i + ''}
           config={it.config}
           isArr={true}
           value={props.seriesConfig}

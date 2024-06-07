@@ -8,7 +8,7 @@ export function setFlatObj(
   if (!obj) {
     obj = {};
   }
-  const attrs = str.replace(/[\[\]]+/g, ".").split(".");
+  const attrs = str.replace(/[\[\]]+/g, '.').split('.');
   let temp = obj;
   for (let i = 0; i < attrs.length; i++) {
     const n = attrs[i];
@@ -36,7 +36,7 @@ export function getFlatObj(
     obj = {};
   }
   let temp = obj;
-  const attrs = str.replace(/[\[\]]+/g, ".").split(".");
+  const attrs = str.replace(/[\[\]]+/g, '.').split('.');
   for (let i = 0; i < attrs.length; i++) {
     const n = attrs[i];
     if (n) {

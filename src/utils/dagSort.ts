@@ -25,10 +25,18 @@ const defaultConfig = {
     cursor: 'move'
   },
   activeClass: 'moving',
-  onStart: (e: DragSortEvent) => {},
-  onChange: (e: DragSortEvent) => {},
-  onEnd: (e: DragSortEvent) => {},
-  onMove: (e: MouseEvent) => {}
+  onStart: (e: DragSortEvent) => {
+    console.log(e);
+  },
+  onChange: (e: DragSortEvent) => {
+    console.log(e);
+  },
+  onEnd: (e: DragSortEvent) => {
+    console.log(e);
+  },
+  onMove: (e: MouseEvent) => {
+    console.log(e);
+  }
 };
 
 export function onDragSort(config: DragSortConfig = defaultConfig) {
@@ -36,11 +44,11 @@ export function onDragSort(config: DragSortConfig = defaultConfig) {
   let children: HTMLElement[];
   let sourceNode: HTMLElement;
   let defatultStyle = {};
-  let data = config.data ? [...config.data] : [];
+  const data = config.data ? [...config.data] : [];
   const setChildDraggable = () => {
     const cs = Array.from(container.children);
     for (let i = 0; i < cs.length; i++) {
-      cs[i].setAttribute('draggable', true);
+      cs[i].setAttribute('draggable', 'true');
     }
     children = cs as HTMLElement[];
   };
@@ -64,7 +72,7 @@ export function onDragSort(config: DragSortConfig = defaultConfig) {
     config.onMove && config.onMove(e);
   };
   const onDragEnd = (e: MouseEvent) => {
-    for (let k in config.activeStyle) {
+    for (const k in config.activeStyle) {
       sourceNode.style[k] = defatultStyle[k];
     }
     if (config.activeClass) {
@@ -77,7 +85,7 @@ export function onDragSort(config: DragSortConfig = defaultConfig) {
     setOneDraggable();
     sourceNode = e.target as HTMLElement;
     defatultStyle = {};
-    for (let k: string in config.activeStyle) {
+    for (const k in config.activeStyle) {
       defatultStyle[k] = sourceNode.style[k];
       sourceNode.style[k] = config.activeStyle[k];
     }
