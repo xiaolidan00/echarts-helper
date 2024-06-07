@@ -1,4 +1,4 @@
-import { useState, type DragEvent } from 'react';
+import { type DragEvent } from 'react';
 import styles from './ChartList.module.scss';
 import optionsKeys from './optionsKeys';
 
@@ -9,28 +9,25 @@ export const ChartList = (props: {
   chartSeries: string[];
   onChange: (type: string, v: string[]) => void;
 }) => {
-  const [isLock, setIsLock] = useState(false);
-
   let dragItem: HTMLElement;
-  const onDrag = (ev: DragEvent) => {
+  const onDragStart = (ev: DragEvent) => {
     dragItem = ev.target as HTMLElement;
   };
-  const onDragItem = (type: string) => {
+  const onDragOver = (ev: DragEvent) => {
+    ev.preventDefault();
+  };
+  const onDragItem = (ev: DragEvent, type: string) => {
+    ev.preventDefault();
+    console.log(ev, type);
     const item = dragItem.dataset.item as string;
     if (type === 'series') {
-      if (isLock || !item) return;
       if (item.indexOf('series') === -1) return;
 
-      setIsLock(true);
       const v = props.chartSeries;
       v.push(item);
       props.onChange(type, [...v]);
-
-      setTimeout(() => {
-        setIsLock(false);
-      }, 1000);
     } else {
-      if (item && (item.indexOf('series') > -1 || props.chartOptions.includes(item))) return;
+      if (item.indexOf('series') > -1 || props.chartOptions.includes(item)) return;
       const v = props.chartOptions;
       v.push(item);
       props.onChange(type, [...v]);
@@ -52,14 +49,14 @@ export const ChartList = (props: {
     <div className={styles.chartList}>
       <div className={styles.chartOptions}>
         {optionsKeys.map((it) => (
-          <span draggable data-item={it} onDrag={onDrag} className={styles.optionItem} key={it}>
+          <span draggable data-item={it} onDragStart={onDragStart} className={styles.optionItem} key={it}>
             {it}
           </span>
         ))}
       </div>
       <div className={styles.chartSelect}>
         <div className={styles.title}>配置项</div>
-        <div className={styles.dragBox} onDragEnter={() => onDragItem('options')}>
+        <div className={styles.dragBox} onDrop={(ev) => onDragItem(ev, 'options')} onDragOver={onDragOver}>
           {props.chartOptions.map((it, idx) => (
             <span data-item={it} className={styles.optionItem} key={'op-' + it + idx}>
               {it} <CloseOutlined onClick={() => onDelItem('options', idx)} className={styles.deleteIcon} />
@@ -67,7 +64,7 @@ export const ChartList = (props: {
           ))}
         </div>
         <div className={styles.title}>系列</div>
-        <div className={styles.dragBox} onDragEnter={() => onDragItem('series')}>
+        <div className={styles.dragBox} onDrop={(ev) => onDragItem(ev, 'series')} onDragOver={onDragOver}>
           {props.chartSeries.map((it, idx) => (
             <span data-item={it} className={styles.optionItem} key={'s-' + it + idx}>
               {it} <CloseOutlined onClick={() => onDelItem('series', idx)} className={styles.deleteIcon} />

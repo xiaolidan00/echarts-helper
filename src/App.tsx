@@ -1,7 +1,7 @@
 import { RightPanel } from './components/RightPanel/RightPanel';
 import { ChartList } from './components/ChartList/ChartList';
 import { useRef, useState } from 'react';
-import { FormItemValue } from './components/FormList/FormList';
+import { FormItemValue } from './components/FormList/config';
 import { ChartContent } from './components/ChartContent/ChartContent';
 import * as baseChart from './config/baseChart';
 import { cloneDeep } from 'lodash-es';

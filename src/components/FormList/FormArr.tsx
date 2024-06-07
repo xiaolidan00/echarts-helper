@@ -78,7 +78,7 @@ export const FormArr = (props: {
           <div className={styles.formArr}>
             <ScrollTabs tabs={items} active={selectTab} onChange={onChangeTab} itemWidth={60}></ScrollTabs>
 
-            <FormList parent="" title="" value={currentVal} config={newconfig} onChange={onChangeVal}></FormList>
+            <FormList value={currentVal} config={newconfig} onChange={onChangeVal}></FormList>
           </div>
         ) : (
           <Empty />

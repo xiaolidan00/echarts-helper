@@ -19,14 +19,19 @@ export interface TextProps {
   inputType: 'text' | 'color';
   default?: string;
 }
-export type FormChildConfig = {
+export interface FormChildConfig {
   inputType: 'children';
   title: string;
   code: string;
-  config: Array<FormItemConfig1>;
-  isArr: true | undefined;
-};
+  config: Array<FormItemConfig>;
+}
 
+export interface FormArrConfig {
+  inputType: 'arr';
+  title: string;
+  code: string;
+  config: Array<FormItemConfig1>;
+}
 export interface MultiItems {
   inputType: 'multi';
   title?: string;
@@ -37,7 +42,7 @@ export interface MultiItems {
 export type KeyVal = {
   [n: string]: any;
 };
-export type FormItemValue = Array<KeyVal> | KeyVal;
+export type FormItemValue = KeyVal;
 export type FormInputProps = {
   code: string;
   nextCode?: string;
@@ -74,8 +79,8 @@ export type FormInputProps1 = {
   code: string;
   label?: string;
 } & (NumInputProps1 | SelectProps1 | TextProps1 | CheckBoxProps1);
-export type FormItemConfig = FormInputProps | MultiItems | FormChildConfig;
+export type FormItemConfig = FormArrConfig | FormInputProps | MultiItems | FormChildConfig;
 
 export type FormItemConfig1 = {
   nextCode: string;
-} & (FormInputProps | MultiItems | FormChildConfig);
+} & (FormInputProps | MultiItems | FormChildConfig | FormArrConfig);

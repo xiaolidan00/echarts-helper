@@ -1,6 +1,6 @@
 import * as echarts from 'echarts';
 import type { ECharts } from 'echarts';
-import { FormItemValue } from '../FormList/FormList';
+import type { FormItemValue } from '../FormList/config';
 import { useEffect, useImperativeHandle, useRef, type Ref } from 'react';
 import { Button } from 'antd';
 export const ChartContent = (props: {

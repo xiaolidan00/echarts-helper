@@ -1,5 +1,5 @@
 import { InputNumber, Input, ColorPicker, Select, Checkbox } from 'antd';
-import { FC, memo } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 import { FormInputProps1 } from './config';
 import styles from './FormList.module.scss';
 const compMap = {
@@ -16,30 +16,40 @@ export const FormItem = memo(
       onChange: (code: string, value: any) => void;
     }
   ) => {
+    const [propVal, setPropVal] = useState(props.value);
+
     const InputEl: any | FC = compMap[props.inputType];
 
     const changeValue = (ev: any) => {
       const code = props.code;
+      let v;
       if (props.inputType === 'color') {
-        props.onChange(code, ev.toRgbString());
+        v = ev.toRgbString();
       } else if (props.inputType === 'text') {
-        props.onChange(code, ev.target.value);
+        (v = code), ev.target.value;
       } else if (props.inputType === 'boolean') {
-        props.onChange(code, ev.target.checked);
+        v = ev.target.checked;
       } else {
-        props.onChange(code, ev);
+        v = ev;
       }
+      setPropVal(v);
+      props.onChange(code, v);
     };
+    useEffect(() => {
+      setPropVal(props.value);
+      return () => {};
+    }, [props.value]);
     let attrs = {};
     if (props.inputType === 'number') {
-      attrs = { value: props.value, min: props.min, step: props.step, max: props.max };
+      attrs = { value: propVal, min: props.min, step: props.step, max: props.max };
     } else if (props.inputType === 'boolean') {
-      attrs = { checked: props.value };
+      attrs = { checked: propVal };
     } else if (props.inputType === 'select') {
-      attrs = { value: props.value, options: props.options.map((it) => ({ label: it, value: it })) };
+      attrs = { value: propVal, options: props.options.map((it) => ({ label: it, value: it })) };
     } else {
-      attrs = { value: props.value };
+      attrs = { value: propVal };
     }
+    // console.log('refresh', props.code);
 
     return (
       <div className={styles.formItem}>

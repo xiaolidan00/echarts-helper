@@ -121,8 +121,7 @@ function getChildForm(formList) {
 
     for (const k in listMap) {
       list.push({
-        inputType: 'children',
-        isArr: ['data', 'indicator'].includes(k),
+        inputType: ['data', 'indicator'].includes(k) ? 'arr' : 'children',
         title: k,
         code: k,
         config: getChildForm(listMap[k])

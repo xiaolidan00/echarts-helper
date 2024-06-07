@@ -2,7 +2,7 @@ import { FormList } from '../FormList/FormList';
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FormChildConfig, FormItemConfig, FormItemValue } from '../FormList/config';
+import type { FormChildConfig, FormItemConfig, FormItemValue } from '../FormList/config';
 interface configMap {
   [n: string]: Array<FormItemConfig>;
 }
