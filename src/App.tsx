@@ -5,6 +5,7 @@ import { FormItemValue } from './components/FormList/config';
 import { ChartContent } from './components/ChartContent/ChartContent';
 import * as baseChart from './config/baseChart';
 import { cloneDeep } from 'lodash-es';
+import { uuid } from './utils/uuid';
 interface CfgMap {
   [n: string]: number;
 }
@@ -16,74 +17,61 @@ function App() {
   const chartRef = useRef<{ createChart: () => void }>(null);
   const onChangeList = (type: string, v: string[]) => {
     if (type === 'series') {
-      const map: CfgMap = {};
-      v.forEach((a) => {
-        map[a] = 1;
-      });
-      const cfg = seriesConfig;
-      for (const k in cfg) {
-        if (!map[k]) {
-          delete cfg[k];
-        }
+      //删除系列，对应删除系列值
+      if (seriesConfig.length > v.length) {
+        const map: CfgMap = {};
+        seriesConfig.forEach((a) => {
+          map[a.id] = 1;
+        });
+        const cfg = seriesConfig.filter((a) => map[a.id]);
+        setSeriesConfig(cfg);
       }
-      setSeriesConfig(cfg);
       setChartSeries(v);
     } else {
-      const map: CfgMap = {};
-      v.forEach((a) => {
-        map[a] = 1;
-      });
-      const cfg = optionsConfig;
-      for (const k in cfg) {
-        if (!map[k]) {
-          delete cfg[k];
+      //删除基础配置，对应删除属性值
+      if (v.length < Object.keys(optionsConfig).length) {
+        const map: CfgMap = {};
+        v.forEach((a) => {
+          map[a] = 1;
+        });
+        const cfg = optionsConfig;
+        for (const k in cfg) {
+          if (!map[k]) {
+            delete cfg[k];
+          }
         }
+        setOptionsConfig(cfg);
       }
-      setOptionsConfig(cfg);
+
       setChartOptions(v);
     }
-    // saveCfg();
+    renderChart();
   };
   const onChangeConfig = ({ type, v }: { type: string; v: FormItemValue }) => {
-    if (type == 'series') {
+    if (type === 'series') {
       setSeriesConfig(v);
     } else {
       setOptionsConfig(v);
     }
-    // saveCfg();
+    console.log(type, v);
+    renderChart();
   };
-  // const saveCfg = () => {
-  //   window.localStorage.setItem(
-  //     'chartConfig',
-  //     JSON.stringify({
-  //       optionsConfig,
-  //       seriesConfig,
-  //       chartOptions,
-  //       chartSeries
-  //     })
-  //   );
-  // };
-  // useEffect(() => {
-  //   if (window.localStorage.getItem('chartConfig')) {
-  //     const cfg = JSON.parse(window.localStorage.getItem('chartConfig') as string);
-  //     setOptionsConfig(cfg.optionsConfig);
-  //     setSeriesConfig(cfg.seriesConfig);
-  //     setChartOptions(cfg.chartOptions);
-  //     setChartSeries(cfg.chartSeries);
-  //   }
 
-  //   return () => {};
-  // }, []);
   const baseChartKeys = Object.keys(baseChart);
   const onBaseChart = (c: string) => {
     const item = c as keyof typeof baseChart;
-    console.log('onBaseChart', item);
+
     const op = cloneDeep(baseChart[item]);
     const ops: string[] = [];
     const opCfg: FormItemValue = {};
     for (const k in op) {
       if (k !== 'series') {
-        ops.push(k);
+        if (k === 'visualMap') {
+          ops.push('visualMap-continuous');
+        } else {
+          ops.push(k);
+        }
+
         opCfg[k] = op[k as keyof typeof op];
         if (opCfg[k].data && Array.isArray(opCfg[k].data) && typeof opCfg[k].data[0] === 'string') {
           opCfg[k].data.map((it: string) => ({ value: it }));
@@ -94,6 +82,7 @@ function App() {
     setOptionsConfig(opCfg);
     const s: string[] = [];
     op.series.forEach((it) => {
+      it.id = uuid();
       s.push('series-' + it.type);
       if (typeof it.data[0] === 'number') {
         (it.data as Array<any>).forEach((a, i: number) => {
@@ -108,6 +97,8 @@ function App() {
     });
     setChartSeries(s);
     setSeriesConfig(op.series);
+  };
+  const renderChart = () => {
     setTimeout(() => {
       if (chartRef.current?.createChart) chartRef.current.createChart();
     }, 100);

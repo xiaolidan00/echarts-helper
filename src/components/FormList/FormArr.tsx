@@ -6,10 +6,10 @@ import styles from './FormList.module.scss';
 import { FormList } from './FormList';
 import { Empty } from 'antd';
 export const FormArr = (props: {
-  title: string;
-  config: Array<FormItemConfig1>;
-  value: FormItemValue;
-  code: string;
+  title: string; //标题
+  config: Array<FormItemConfig1>; //表单配置
+  value: FormItemValue; //数组对象
+  code: string; //属性
   onChange: (code: string, val: FormItemValue) => void;
 }) => {
   const [propVal, setPropVal] = useState(props.value || []);
@@ -27,7 +27,7 @@ export const FormArr = (props: {
   };
   const items: TabsItem[] = [];
   const newconfig = useMemo(() => props.config.map((it) => ({ ...it, code: it.nextCode })), [props.config]);
-
+  //生成tabs
   for (let i = 0; i < propVal.length; i++) {
     const idx = i + 1 + '';
     items.push({
@@ -35,10 +35,12 @@ export const FormArr = (props: {
       label: props.title + idx
     });
   }
+  //切换当前配置对象
   const onChangeTab = (tab: string | number) => {
     setSelectTab(tab as number);
     setCurrentVal({ ...propVal[tab] });
   };
+  //添加配置
   const onAdd = () => {
     const v = propVal;
     v.push({});
@@ -47,6 +49,7 @@ export const FormArr = (props: {
 
     onChangeTab(v.length - 1);
   };
+  //删除数组的对象
   const onDel = () => {
     const i = selectTab;
     const v = propVal;
@@ -57,6 +60,7 @@ export const FormArr = (props: {
       onChangeTab(v.length - 1);
     }
   };
+  //初始化默认当前选项
   useEffect(() => {
     setCurrentVal(propVal[selectTab]);
     return () => {};

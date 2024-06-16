@@ -1,8 +1,10 @@
 import { FormList } from '../FormList/FormList';
 
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+
 import type { FormChildConfig, FormItemConfig, FormItemValue } from '../FormList/config';
+import { Empty } from 'antd';
+import { uuid } from '../../utils/uuid';
 interface configMap {
   [n: string]: Array<FormItemConfig>;
 }
@@ -14,44 +16,49 @@ interface FormConfig {
 const configMap: configMap = {};
 function getConfigJSON(name: string) {
   return new Promise<Array<FormItemConfig>>((resolve) => {
+    //缓存配置
     if (configMap[name]) resolve(configMap[name]);
-    else
-      axios
-        .get(`/form/${name}.json`)
-        .then(({ data }) => {
-          configMap[name] = data as Array<FormItemConfig>;
-          resolve(data);
+    else {
+      //获取echarts的表单配置
+      import(`./echartsForm/${name}.js`)
+        .then(({ default: data }) => {
+          if (typeof data === 'object') {
+            configMap[name] = data as Array<FormItemConfig>;
+          } else {
+            configMap[name] = [{ inputType: 'text', code: name, label: name, id: name }];
+          }
+          resolve(configMap[name]);
         })
         .catch(() => {
-          configMap[name] = [{ inputType: 'text', code: name, label: name }];
+          //如果没有配置就生成默认配置
+          configMap[name] = [{ inputType: 'text', code: name, label: name, id: name }];
           resolve(configMap[name]);
         });
+    }
   });
 }
 
 export const RightPanel = (props: {
-  chartOptions: string[];
-  chartSeries: string[];
-  optionsConfig: FormItemValue;
-  seriesConfig: FormItemValue;
+  chartOptions: string[]; //echarts的普通配置属性
+  chartSeries: string[]; //echarts的系列配置属性
+  optionsConfig: FormItemValue; //echarts的普通配置属性的值
+  seriesConfig: FormItemValue; //echarts的系列配置属性值
   onChange: (ev: { type: string; v: FormItemValue }) => void;
 }) => {
-  const onChangeValue = (v: FormItemValue) => {
-    props.onChange({ type: 'options', v });
-    console.log(v);
-  };
   const [baseOpList, setBaseOpList] = useState<FormItemConfig[]>([]);
   const [optionsList, setOptionsList] = useState<FormConfig[]>([]);
 
   const [seriesList, setSeriesList] = useState<FormConfig[]>([]);
-
+  //更新获取表单配置面板
   const updatePanel = async () => {
+    //基础配置
     {
       const list: FormConfig[] = [];
       const baseList: FormItemConfig[] = [];
       for (let i = 0; i < props.chartOptions.length; i++) {
         const item = props.chartOptions[i];
         const set = await getConfigJSON(item);
+
         if (set.length === 1) {
           baseList.push(set[0]);
         } else {
@@ -61,16 +68,20 @@ export const RightPanel = (props: {
       setBaseOpList(baseList);
       setOptionsList(list);
     }
+    //系列配置
     {
       const s = props.seriesConfig;
+
       const list: FormConfig[] = [];
       for (let i = 0; i < props.chartSeries.length; i++) {
         const item = props.chartSeries[i];
         const set = await getConfigJSON(item);
         list.push({ title: item, config: set, code: item } as FormChildConfig);
-        if (!props.seriesConfig[i]) {
+
+        if (s[i] === undefined) {
+          //不存在系列则添加系列
           const type = item.substring(item.indexOf('-') + 1);
-          s[i] = { type, data: [] };
+          s[i] = { type, data: [], id: uuid() };
         }
       }
       onChangeSeries(s);
@@ -79,15 +90,23 @@ export const RightPanel = (props: {
   };
   const onChangeSeries = (v: FormItemValue) => {
     props.onChange({ type: 'series', v });
-    console.log(v);
   };
+  const onChangeValue = (v: FormItemValue) => {
+    props.onChange({ type: 'options', v });
+  };
+  //监听配置属性，则更新面板
   useEffect(() => {
     updatePanel();
-
     return () => {};
   }, [props.chartOptions, props.chartSeries]);
   return (
     <div className="rightPanel">
+      {/* 基础配置面板 */}
+      {props.chartOptions.length === 0 && props.chartSeries.length === 0 ? (
+        <Empty description="请选择echarts配置"></Empty>
+      ) : (
+        ''
+      )}
       <FormList config={baseOpList} value={props.optionsConfig} onChange={onChangeValue}></FormList>
       {optionsList.map((it) => (
         <FormList
@@ -99,6 +118,7 @@ export const RightPanel = (props: {
           onChange={onChangeValue}
         ></FormList>
       ))}
+      {/* 系列配置面板 */}
       {seriesList.map((it, i) => (
         <FormList
           title={i + 1 + '.' + it.title}

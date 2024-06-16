@@ -1,0 +1,1 @@
+export default [{"id":"stateAnimation.duration","code":"duration","inputType":"text","label":"duration"},{"id":"stateAnimation.easing","code":"easing","inputType":"text","label":"easing"}]

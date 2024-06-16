@@ -6,6 +6,7 @@
   * {
     box-sizing: border-box;
   }
+
   .formTitle {
     font-weight: bold;
     line-height: 40px;
@@ -23,7 +24,7 @@
   }
   .formItem {
     display: flex;
-    height: 40px;
+    min-height: 40px;
     align-items: center;
   }
   .formLabel {

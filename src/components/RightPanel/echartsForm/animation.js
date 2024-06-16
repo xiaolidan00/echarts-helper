@@ -1,0 +1,1 @@
+export default [{"id":"animation.animation","code":"animation","inputType":"boolean","label":"animation","default":true}]

@@ -47,6 +47,7 @@ export type FormInputProps = {
   code: string;
   nextCode?: string;
   label?: string;
+  id: string;
 } & (NumInputProps | SelectProps | TextProps | CheckBoxProps);
 
 export interface CheckBoxProps1 {
@@ -79,8 +80,8 @@ export type FormInputProps1 = {
   code: string;
   label?: string;
 } & (NumInputProps1 | SelectProps1 | TextProps1 | CheckBoxProps1);
-export type FormItemConfig = FormArrConfig | FormInputProps | MultiItems | FormChildConfig;
+export type FormItemConfig = { id: string } & (FormArrConfig | FormInputProps | MultiItems | FormChildConfig);
 
 export type FormItemConfig1 = {
   nextCode: string;
-} & (FormInputProps | MultiItems | FormChildConfig | FormArrConfig);
+} & FormItemConfig;

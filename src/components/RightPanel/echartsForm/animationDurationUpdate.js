@@ -1,0 +1,1 @@
+export default [{"id":"animationDurationUpdate.animationDurationUpdate","code":"animationDurationUpdate","inputType":"number","label":"animationDurationUpdate","min":0,"step":20,"default":1000}]

@@ -1,0 +1,48 @@
+.AdcodeSelect {
+  .selectBox {
+    position: absolute;
+    height: 200px;
+    width: 213px;
+    padding: 4px;
+    z-index: 2;
+    background: var(--base-bg);
+    border: var(--form-border);
+    border-radius: 6px;
+  }
+  .adcodeResult {
+    margin-left: 8px;
+  }
+  .adcodeTab {
+    display: flex;
+    height: 24px;
+    align-items: center;
+    overflow: hidden;
+    border-bottom: var(--form-border);
+    > span {
+      white-space: nowrap;
+      overflow: hidden;
+      height: 100%;
+      display: inline-block;
+      cursor: pointer;
+      text-align: center;
+      &:not(:last-child) {
+        padding-right: 8px;
+      }
+    }
+  }
+  .adcodeList {
+    height: calc(100% - 32px);
+    overflow: auto;
+    > span {
+      white-space: nowrap;
+      overflow: hidden;
+      cursor: pointer;
+      width: calc(50% - 8px);
+      margin: 4px;
+      display: inline-block;
+      &.active {
+        color: dodgerblue;
+      }
+    }
+  }
+}

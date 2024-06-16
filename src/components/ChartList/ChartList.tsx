@@ -16,23 +16,27 @@ export const ChartList = (props: {
   const onDragOver = (ev: DragEvent) => {
     ev.preventDefault();
   };
+  //拖入框内
   const onDragItem = (ev: DragEvent, type: string) => {
     ev.preventDefault();
-    console.log(ev, type);
+
     const item = dragItem.dataset.item as string;
     if (type === 'series') {
+      //禁止错误类型拖入
       if (item.indexOf('series') === -1) return;
 
       const v = props.chartSeries;
       v.push(item);
       props.onChange(type, [...v]);
     } else {
+      //禁止错误类型拖入，并且不可重复
       if (item.indexOf('series') > -1 || props.chartOptions.includes(item)) return;
       const v = props.chartOptions;
       v.push(item);
       props.onChange(type, [...v]);
     }
   };
+  //删除项
   const onDelItem = (type: string, idx: number) => {
     if (type === 'series') {
       const v = props.chartSeries;
@@ -47,6 +51,7 @@ export const ChartList = (props: {
 
   return (
     <div className={styles.chartList}>
+      {/*可选配置*/}
       <div className={styles.chartOptions}>
         {optionsKeys.map((it) => (
           <span draggable data-item={it} onDragStart={onDragStart} className={styles.optionItem} key={it}>
@@ -54,6 +59,7 @@ export const ChartList = (props: {
           </span>
         ))}
       </div>
+      {/*基础配置拖入框*/}
       <div className={styles.chartSelect}>
         <div className={styles.title}>配置项</div>
         <div className={styles.dragBox} onDrop={(ev) => onDragItem(ev, 'options')} onDragOver={onDragOver}>
@@ -63,6 +69,7 @@ export const ChartList = (props: {
             </span>
           ))}
         </div>
+        {/*系列拖入框*/}
         <div className={styles.title}>系列</div>
         <div className={styles.dragBox} onDrop={(ev) => onDragItem(ev, 'series')} onDragOver={onDragOver}>
           {props.chartSeries.map((it, idx) => (

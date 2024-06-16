@@ -1,3 +1,4 @@
+import proList from './pro.json';
 export const line = {
   xAxis: {
     type: 'category',
@@ -152,6 +153,47 @@ export const gauge = {
           value: 70
         }
       ]
+    }
+  ]
+};
+
+export const map = {
+  visualMap: {
+    show: true,
+
+    text: ['高', '低'],
+    calculable: true,
+    seriesIndex: [0],
+    inRange: {
+      color: ['rgba(0,191,255,1)', 'rgba(30,144,255,1)', 'rgba(46, 122, 255, 1)', 'rgba(56, 60, 227, 1)']
+    }
+  },
+  series: [
+    {
+      type: 'map',
+      map: '100000',
+      name: '地图',
+      roam: true,
+      data: proList.map((it) => ({ name: it.name, value: Math.round(Math.random() * 999) })),
+
+      label: {
+        show: true,
+        color: '#FFFFFF'
+      },
+      emphasis: {
+        label: {
+          color: '#FFFF00'
+        },
+        itemStyle: {
+          areaColor: '#0a2dae'
+        }
+      },
+      itemStyle: {
+        areaColor: '#3a7fd5',
+        borderColor: '#0a53e9', //线
+        shadowColor: '#092f8f', //外发光
+        shadowBlur: 20
+      }
     }
   ]
 };

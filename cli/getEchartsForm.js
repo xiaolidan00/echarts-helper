@@ -38,13 +38,14 @@ async function transformEchartsItem(name, cfg) {
     }
   }
   const list = [];
+  let inRangeSet;
   for (let k in data) {
     if (k.indexOf('.<') > 1) continue;
     const item = data[k];
     const c = item.uiControl;
     const key = k.substring(k.lastIndexOf('.') + 1);
     const set = { inputType: 'text', label: key };
-    if (!c && item.desc.indexOf('可选：</p>\n<ul>') > -1) {
+    if (!c && item.desc.indexOf('：</p>\n<ul>') > -1) {
       const $ = cheerio.load(item.desc);
       set.inputType = 'select';
       let ops = [];
@@ -62,6 +63,15 @@ async function transformEchartsItem(name, cfg) {
       if (df) {
         set.options.default = df;
       }
+    } else if (key === 'symbol') {
+      set.inputType = 'symbol';
+    } else if (key === 'map') {
+      set.inputType = 'adcode';
+    } else if (key.indexOf('Color') >= 0) {
+      set.inputType = 'color';
+    } else if (k === 'inRange') {
+      inRangeSet = { c, k, key, item };
+      continue;
     } else if (c) {
       if (c.type === 'enum') {
         set.inputType = 'select';
@@ -88,15 +98,33 @@ async function transformEchartsItem(name, cfg) {
       }
     }
     list.push({
+      id: name + '.' + k,
       code: k,
       ...set
     });
   }
-  const formList = getChildForm(list);
-  fs.writeFileSync(`../public/form/${name}.json`, JSON.stringify(formList));
+
+  const formList = getChildForm(list, name);
+  if (inRangeSet) {
+    formList.push({
+      inputType: 'children',
+      title: inRangeSet.key,
+      code: inRangeSet.k,
+      id: name + '.' + inRangeSet.k,
+      config: [
+        {
+          id: name + '.' + inRangeSet.k + '.color',
+          code: inRangeSet.k + '.color',
+          inputType: 'text',
+          label: 'color'
+        }
+      ]
+    });
+  }
+  fs.writeFileSync(`../src/components/RightPanel/echartsForm/${name}.js`, 'export default ' + JSON.stringify(formList));
   console.log(name + ' ok');
 }
-function getChildForm(formList) {
+function getChildForm(formList, name) {
   let list = [];
   const listMap = {};
   formList.forEach((item) => {
@@ -124,7 +152,8 @@ function getChildForm(formList) {
         inputType: ['data', 'indicator'].includes(k) ? 'arr' : 'children',
         title: k,
         code: k,
-        config: getChildForm(listMap[k])
+        id: name + '.' + k,
+        config: getChildForm(listMap[k], name + '.' + k)
       });
     }
   }

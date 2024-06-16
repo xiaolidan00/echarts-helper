@@ -1,3 +1,10 @@
+/**
+ * 给obj的扁平属性设置新值
+ * @param obj 对象或数组
+ * @param str 扁平属性，如{a:{b:[{c:1}]}}=>'a.b[0].c'
+ * @param value 新值
+ * @returns
+ */
 export function setFlatObj(
   obj: {
     [n: string | number]: any;
@@ -17,6 +24,7 @@ export function setFlatObj(
         temp[n] = value;
       } else {
         if (!temp[n]) {
+          //如果是空值则设置为空对象
           temp[n] = {};
         }
         temp = temp[n];
@@ -25,7 +33,12 @@ export function setFlatObj(
   }
   return obj;
 }
-
+/**
+ * 获取扁平属性的值
+ * @param obj 对象或数组
+ * @param str 扁平属性，如{a:{b:[{c:1}]}}=>'a.b[0].c'
+ * @returns
+ */
 export function getFlatObj(
   obj: {
     [n: string | number]: any;
