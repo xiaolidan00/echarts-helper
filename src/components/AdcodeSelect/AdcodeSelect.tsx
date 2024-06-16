@@ -37,13 +37,27 @@ export const AdcodeSelect = (props: { value: string; onChange: (v: string) => vo
   };
   const loadDist = () => {
     setActiveTab(3);
+    if (dist) {
+      setVal(dist);
+      props.onChange(dist);
+    }
   };
   const loadCity = () => {
     setActiveTab(2);
+    if (city) {
+      setVal(city);
+      props.onChange(city);
+    }
+
     setDist('');
   };
   const resetPro = () => {
     setActiveTab(1);
+    if (pro) {
+      setVal(pro);
+      props.onChange(pro);
+    }
+
     setCity('');
     setDist('');
   };

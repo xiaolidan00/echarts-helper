@@ -45,6 +45,8 @@ export const SymbolPicker = (props: { value: string; onChange: (v: string) => vo
           setVal(props.value);
         }
       }
+    } else {
+      setVal('');
     }
   }, [props.value]);
   return (

@@ -20,7 +20,7 @@ function getConfigJSON(name: string) {
     if (configMap[name]) resolve(configMap[name]);
     else {
       //获取echarts的表单配置
-      import(`./echartsForm/${name}.js`)
+      import(`./echartsForm/${name}.ts`)
         .then(({ default: data }) => {
           if (typeof data === 'object') {
             configMap[name] = data as Array<FormItemConfig>;

@@ -121,7 +121,7 @@ async function transformEchartsItem(name, cfg) {
       ]
     });
   }
-  fs.writeFileSync(`../src/components/RightPanel/echartsForm/${name}.js`, 'export default ' + JSON.stringify(formList));
+  fs.writeFileSync(`../src/components/RightPanel/echartsForm/${name}.ts`, 'export default ' + JSON.stringify(formList));
   console.log(name + ' ok');
 }
 function getChildForm(formList, name) {
