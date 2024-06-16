@@ -1,6 +1,6 @@
 import { ColorPicker, Select, type ColorPickerProps } from 'antd';
 import { Color, LinearGradientObject, RadialGradientObject } from 'echarts';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './EchartsColor.module.scss';
 
 const grdOptions = [
@@ -65,58 +65,59 @@ export const EchartsColor = (props: { value: Color; onChange: (v: Color) => void
 
   const [color1, setColor1] = useState<string>('#FF0000');
   const [color2, setColor2] = useState('#FF0000');
-  const [isLock, setIsLock] = useState(false);
-  const onResult = () => {
-    if (isLock) return;
-    setIsLock(true);
+  const isLock = useRef(false);
+  const onResult = (p: { c1: string; c2: string; g: string; t: number }) => {
+    if (isLock.current) return;
+    isLock.current = true;
     setTimeout(() => {
       let v;
-      if (activeTab === 0) {
-        v = color1;
+      if (p.t === 0) {
+        v = p.c1;
       } else {
         v = {
-          ...grdMap[grdType],
+          ...grdMap[p.g],
           colorStops: [
             {
               offset: 0,
-              color: color1 // 0% 处的颜色
+              color: p.c1 // 0% 处的颜色
             },
             {
               offset: 1,
-              color: color2 // 100% 处的颜色
+              color: p.c2 // 100% 处的颜色
             }
           ],
           global: false // 缺省为 false
         };
       }
       props.onChange(v);
-      setTimeout(() => {
-        setIsLock(false);
-      }, 100);
+
+      isLock.current = false;
     }, 100);
   };
-  const onChangeColor1: ColorPickerProps['onChangeComplete'] = (ev) => {
-    if (ev.toRgbString() !== color1) {
-      setColor1(ev.toRgbString());
-      onResult();
+  const onChangeColor1: ColorPickerProps['onChange'] = (ev) => {
+    const v = ev.toRgbString();
+    if (v !== color1) {
+      setColor1(v);
+      onResult({ c1: v, c2: color2, g: grdType, t: activeTab });
     }
   };
-  const onChangeColor2: ColorPickerProps['onChangeComplete'] = (ev) => {
-    if (ev.toRgbString() !== color2) {
-      console.log('color2', ev.toRgbString());
-      setColor2(ev.toRgbString());
-      onResult();
+  const onChangeColor2: ColorPickerProps['onChange'] = (ev) => {
+    const v = ev.toRgbString();
+    if (v !== color2) {
+      setColor2(v);
+      onResult({ c1: color1, c2: v, g: grdType, t: activeTab });
     }
   };
   const onChangeTab = async () => {
-    setActiveTab(activeTab === 1 ? 0 : 1);
+    const v = activeTab === 1 ? 0 : 1;
+    setActiveTab(v);
 
-    onResult();
+    onResult({ c1: color1, c2: color2, g: grdType, t: v });
   };
 
   const onChangeGrd = (v: string) => {
     setGrdType(v);
-    onResult();
+    onResult({ c1: color1, c2: color2, g: v, t: activeTab });
   };
   useEffect(() => {
     if (isLock) return;
@@ -168,12 +169,12 @@ export const EchartsColor = (props: { value: Color; onChange: (v: Color) => void
       <span onClick={onChangeTab} className={styles.colorGrd}>
         {activeTab === 1 ? '渐变' : '纯色'}
       </span>
-      <ColorPicker value={color1} onChangeComplete={onChangeColor1}></ColorPicker>
+      <ColorPicker value={color1} onChange={onChangeColor1}></ColorPicker>
 
       <ColorPicker
         style={{ display: activeTab === 1 ? '' : 'none' }}
         value={color2}
-        onChangeComplete={onChangeColor2}
+        onChange={onChangeColor2}
       ></ColorPicker>
 
       <Select
