@@ -58,8 +58,9 @@ export const ChartContent = (props: {
         JSON.parse(JSON.stringify(options), (key, value) => {
           if (value && typeof value === 'string') {
             //字符串转数组
-            if (['center', 'position', 'radius', 'value', 'data', 'color'].includes(key) && value.indexOf(','))
+            if (['center', 'position', 'radius', 'value', 'data'].includes(key) && value.indexOf(','))
               return value.split(',');
+
             //字符串转函数
             if (key === 'formatter' && value.indexOf('function') === 0) return new Function(value);
             //字符串转布尔
@@ -70,7 +71,7 @@ export const ChartContent = (props: {
         })
       );
 
-      console.log('options', options);
+      console.log('options', chart.current.getOption());
       isLock.current = false;
     }, 500);
   };

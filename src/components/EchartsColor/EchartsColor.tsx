@@ -1,4 +1,4 @@
-import { ColorPicker, Select } from 'antd';
+import { ColorPicker, Select, type ColorPickerProps } from 'antd';
 import { Color, LinearGradientObject, RadialGradientObject } from 'echarts';
 import { useEffect, useState } from 'react';
 import styles from './EchartsColor.module.scss';
@@ -95,13 +95,13 @@ export const EchartsColor = (props: { value: Color; onChange: (v: Color) => void
       }, 100);
     }, 100);
   };
-  const onChangeColor1 = (ev) => {
+  const onChangeColor1: ColorPickerProps['onChangeComplete'] = (ev) => {
     if (ev.toRgbString() !== color1) {
       setColor1(ev.toRgbString());
       onResult();
     }
   };
-  const onChangeColor2 = (ev) => {
+  const onChangeColor2: ColorPickerProps['onChangeComplete'] = (ev) => {
     if (ev.toRgbString() !== color2) {
       console.log('color2', ev.toRgbString());
       setColor2(ev.toRgbString());
@@ -121,8 +121,8 @@ export const EchartsColor = (props: { value: Color; onChange: (v: Color) => void
   useEffect(() => {
     if (isLock) return;
     console.log('parse', props.value);
-    if (props.value === undefined) {
-      setColor1('');
+    if (!props.value) {
+      setColor1('#FF0000');
     } else {
       if (typeof props.value === 'string') {
         if (activeTab !== 0) setActiveTab(0);
@@ -168,12 +168,12 @@ export const EchartsColor = (props: { value: Color; onChange: (v: Color) => void
       <span onClick={onChangeTab} className={styles.colorGrd}>
         {activeTab === 1 ? '渐变' : '纯色'}
       </span>
-      <ColorPicker value={color1} onChange={onChangeColor1}></ColorPicker>
+      <ColorPicker value={color1} onChangeComplete={onChangeColor1}></ColorPicker>
 
       <ColorPicker
         style={{ display: activeTab === 1 ? '' : 'none' }}
         value={color2}
-        onChange={onChangeColor2}
+        onChangeComplete={onChangeColor2}
       ></ColorPicker>
 
       <Select

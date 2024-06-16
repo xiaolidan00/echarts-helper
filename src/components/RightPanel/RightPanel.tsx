@@ -10,6 +10,7 @@ interface configMap {
 }
 interface FormConfig {
   title: string;
+  code: string;
   config: Array<FormItemConfig>;
 }
 
@@ -62,7 +63,11 @@ export const RightPanel = (props: {
         if (set.length === 1) {
           baseList.push(set[0]);
         } else {
-          list.push({ title: item, config: set, code: item } as FormChildConfig);
+          list.push({
+            title: item,
+            config: set,
+            code: item.indexOf('-') ? item.substring(0, item.indexOf('-')) : item
+          } as FormChildConfig);
         }
       }
       setBaseOpList(baseList);
@@ -76,7 +81,11 @@ export const RightPanel = (props: {
       for (let i = 0; i < props.chartSeries.length; i++) {
         const item = props.chartSeries[i];
         const set = await getConfigJSON(item);
-        list.push({ title: item, config: set, code: item } as FormChildConfig);
+        list.push({
+          title: item,
+          config: set,
+          code: item
+        } as FormChildConfig);
 
         if (s[i] === undefined) {
           //不存在系列则添加系列
@@ -84,6 +93,7 @@ export const RightPanel = (props: {
           s[i] = { type, data: [], id: uuid() };
         }
       }
+
       onChangeSeries(s);
       setSeriesList(list);
     }
@@ -111,7 +121,7 @@ export const RightPanel = (props: {
       {optionsList.map((it) => (
         <FormList
           title={it.title}
-          parent={it.title}
+          parent={it.code}
           config={it.config}
           value={props.optionsConfig}
           key={it.title}
