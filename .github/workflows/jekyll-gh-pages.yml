@@ -28,17 +28,20 @@ jobs:
     strategy:
       matrix:
         node-version: ['v18.6.0']
+        pnpm-version: ['8.5.0']
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - name: setup node and pnpm
+        uses: dafnik/setup-node-pnpm@v1
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - run: |
-          npm install
-          npm run build
+          pnpm: ${{ matrix.pnpm-version }}
+          node: ${{ matrix.node-version }}
+          install: false
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build pages
+        run: npm run build
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Build with Jekyll
