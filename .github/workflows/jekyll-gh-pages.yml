@@ -32,6 +32,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: setup node and pnpm
         uses: dafnik/setup-node-pnpm@v1
         with:
@@ -45,4 +47,5 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           folder: dist
