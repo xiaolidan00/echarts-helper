@@ -38,7 +38,9 @@ jobs:
           pnpm: ${{ matrix.pnpm-version }}
           node: ${{ matrix.node-version }}
           install: false
-      - run: pnpm install
+      - run: |
+          pnpm install
+          npm run build
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Build with Jekyll
